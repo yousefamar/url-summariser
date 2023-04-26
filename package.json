@@ -1,0 +1,30 @@
+{
+  "name": "url-summariser",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yousefamar/url-summariser.git"
+  },
+  "keywords": [
+    "url",
+    "summariser",
+    "summarizer",
+    "gpt",
+    "llm"
+  ],
+  "author": "Yousef Amar <yousef@amar.io> (http://yousefamar.com/)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/yousefamar/url-summariser/issues"
+  },
+  "homepage": "https://github.com/yousefamar/url-summariser#readme",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
