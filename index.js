@@ -91,6 +91,28 @@ async function summarise(inputText, summaryWords = 100) {
 
 app.get('/favicon.ico', (req, res) => res.status(204));
 
+app.get('/', (req, res) => {
+  // return full-page iframe with https://yousefamar.com/projects/url-summariser/
+  res.send(`
+    <html>
+      <head>
+        <title>URL Summariser</title>
+        <style>
+          body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: #030c22;
+          }
+        </style>
+      </head>
+      <body>
+        <iframe src="https://yousefamar.com/projects/url-summariser/" style="width: 100%; height: 100%; border: none;"></iframe>
+      </body>
+    </html>
+  `);
+});
+
 app.get('*', async (req, res) => {
   const url = req.originalUrl.substring(1);
 
