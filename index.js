@@ -16,8 +16,20 @@ async function fetchWebpage(url) {
     redirect: 'follow',
   });
   const html = await res.text();
-  console.log(html);
-  const doc = new JSDOM(html);
+  let doc = new JSDOM(html);
+
+  // If the link is a hackernews link, we need to get the actual link
+  if (url.startsWith('https://news.ycombinator.com/item?id=')) {
+    const linkElement = doc.window.document.querySelector('.titleline > a');
+    console.log('HN link detected, instead summarising', linkElement?.href);
+    if (linkElement?.href) {
+      const res = await fetch(linkElement.href, {
+        redirect: 'follow',
+      });
+      const html = await res.text();
+      doc = new JSDOM(html);
+    }
+  }
 
   const reader = new Readability(doc.window.document);
   const article = reader.parse();
