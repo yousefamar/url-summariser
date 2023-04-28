@@ -25,6 +25,10 @@
   },
   "homepage": "https://github.com/yousefamar/url-summariser#readme",
   "dependencies": {
-    "express": "^4.18.2"
+    "@mozilla/readability": "^0.4.4",
+    "express": "^4.18.2",
+    "jsdom": "^21.1.1",
+    "node-fetch": "^2.6.9",
+    "youtube-transcript": "^1.0.5"
   }
 }
