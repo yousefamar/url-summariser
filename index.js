@@ -12,12 +12,18 @@ const OPENAI_API_KEY = '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';
 const youtubeRegex = /^.*(?:(?:youtu\.be\/|v\/|vi\/|u\/\w\/|embed\/)|(?:(?:watch)?\?v(?:i)?=|\&v(?:i)?=))([^#\&\?]*).*/im;
 
 async function fetchWebpage(url) {
-  const res = await fetch(url);
+  const res = await fetch(url, {
+    redirect: 'follow',
+  });
   const html = await res.text();
+  console.log(html);
   const doc = new JSDOM(html);
 
   const reader = new Readability(doc.window.document);
   const article = reader.parse();
+
+  if (!article)
+    return null;
 
   return `# ${article.title}\n\n${article.textContent}`;
 }
@@ -92,6 +98,9 @@ app.get('*', async (req, res) => {
   } else {
     inputText = await fetchWebpage(url);
   }
+
+  if (!inputText)
+    return res.status(400).send('Could not fetch webpage');
 
   const summary = await summarise(inputText);
 
