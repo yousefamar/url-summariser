@@ -26,6 +26,7 @@
   "homepage": "https://github.com/yousefamar/url-summariser#readme",
   "dependencies": {
     "@mozilla/readability": "^0.4.4",
+    "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "jsdom": "^21.1.1",
     "node-fetch": "^2.6.9",

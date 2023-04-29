@@ -4,9 +4,10 @@ const { JSDOM } = require('jsdom');
 const fetch = require('node-fetch');
 const { YoutubeTranscript } = require('youtube-transcript');
 
+require('dotenv').config();
+
 const app = express();
 const port = process.env.PORT || 8080;
-
 
 const youtubeRegex = /^.*(?:(?:youtu\.be\/|v\/|vi\/|u\/\w\/|embed\/)|(?:(?:watch)?\?v(?:i)?=|\&v(?:i)?=))([^#\&\?]*).*/im;
 
@@ -69,7 +70,7 @@ async function summarise(inputText, summaryWords = 100) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${OPENAI_API_KEY}`,
+        "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`,
       },
       body: JSON.stringify(payload),
     });
