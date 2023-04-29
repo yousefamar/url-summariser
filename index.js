@@ -7,7 +7,6 @@ const { YoutubeTranscript } = require('youtube-transcript');
 const app = express();
 const port = process.env.PORT || 8080;
 
-const OPENAI_API_KEY = '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';
 
 const youtubeRegex = /^.*(?:(?:youtu\.be\/|v\/|vi\/|u\/\w\/|embed\/)|(?:(?:watch)?\?v(?:i)?=|\&v(?:i)?=))([^#\&\?]*).*/im;
 
@@ -91,6 +90,28 @@ async function summarise(inputText, summaryWords = 100) {
 
 app.get('/favicon.ico', (req, res) => res.status(204));
 
+app.get('/', (req, res) => {
+  // return full-page iframe with https://yousefamar.com/projects/url-summariser/
+  res.send(`
+    <html>
+      <head>
+        <title>URL Summariser</title>
+        <style>
+          body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: #030c22;
+          }
+        </style>
+      </head>
+      <body>
+        <iframe src="https://yousefamar.com/projects/url-summariser/" style="width: 100%; height: 100%; border: none;"></iframe>
+      </body>
+    </html>
+  `);
+});
+
 app.get('*', async (req, res) => {
   const url = req.originalUrl.substring(1);
 
@@ -103,12 +124,17 @@ app.get('*', async (req, res) => {
   console.log('Summarising:', url);
 
   let inputText;
-  if (youtubeRegex.test(url)) {
+  if (youtubeRegex.test(url) && url.includes('yout')) {
     inputText = await YoutubeTranscript.fetchTranscript(url, { lang: 'en' });
     inputText = inputText.map(({ text }) => text).join('\n');
     // return res.send(inputText);
   } else {
-    inputText = await fetchWebpage(url);
+    try {
+      inputText = await fetchWebpage(url);
+    } catch (e) {
+      console.log(e);
+      return res.status(400).send('Could not fetch webpage');
+    }
   }
 
   if (!inputText)
@@ -121,4 +147,4 @@ app.get('*', async (req, res) => {
 
 app.listen(port, () => {
   console.log(`URL Summariser started on port ${port}`);
-});  if (youtubeRegex.test(url) && url.includes('yout')) {
+});
