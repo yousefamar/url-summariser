@@ -46,6 +46,11 @@ async function summarise(inputText, summaryWords = 100) {
   // If the input is longer than this, we split it in half and recurse
 
   const words = inputText.split(' ');
+  if (words.length > 10000) {
+    // If the input is longer than 10,000 words, we only take the first 1,000
+    inputText = words.slice(0, 1000).join(' ');
+  }
+    
   if (words.length > 3000) {
     const half = Math.floor(words.length / 2);
     const firstHalf = words.slice(0, half).join(' ');
@@ -132,6 +137,7 @@ app.get('*', async (req, res) => {
   } else {
     try {
       inputText = await fetchWebpage(url);
+      return res.send(inputText);
     } catch (e) {
       console.log(e);
       return res.status(400).send('Could not fetch webpage');
