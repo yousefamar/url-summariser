@@ -9,7 +9,7 @@ require('dotenv').config();
 const app = express();
 const port = process.env.PORT || 8080;
 
-const youtubeRegex = /^.*(?:(?:youtu\.be\/|v\/|vi\/|u\/\w\/|embed\/)|(?:(?:watch)?\?v(?:i)?=|\&v(?:i)?=))([^#\&\?]*).*/im;
+const youtubeRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i;
 
 async function fetchWebpage(url) {
   const res = await fetch(url, {
@@ -125,7 +125,7 @@ app.get('*', async (req, res) => {
   console.log('Summarising:', url);
 
   let inputText;
-  if (youtubeRegex.test(url) && url.includes('yout')) {
+  if (youtubeRegex.test(url)) {
     inputText = await YoutubeTranscript.fetchTranscript(url, { lang: 'en' });
     inputText = inputText.map(({ text }) => text).join('\n');
     // return res.send(inputText);
