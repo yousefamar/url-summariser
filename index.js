@@ -40,6 +40,17 @@ async function fetchWebpage(url) {
   return `# ${article.title}\n\n${article.textContent}`;
 }
 
+async function divideAndConquerSummarise(words, summaryWords) {
+  const half = Math.floor(words.length / 2);
+  const firstHalf = words.slice(0, half).join(' ');
+  const secondHalf = words.slice(half).join(' ');
+  const results = await Promise.all([
+    summarise(firstHalf, summaryWords),
+    summarise(secondHalf, summaryWords)
+  ]);
+  return summarise(results.join(' '), summaryWords);
+}
+
 async function summarise(inputText, summaryWords = 100) {
 
   // 3000 words (approx) is equivalent to the 4097 token limit for gpt-3.5-turbo
@@ -52,14 +63,7 @@ async function summarise(inputText, summaryWords = 100) {
   }
     
   if (words.length > 3000) {
-    const half = Math.floor(words.length / 2);
-    const firstHalf = words.slice(0, half).join(' ');
-    const secondHalf = words.slice(half).join(' ');
-    const results = await Promise.all([
-      summarise(firstHalf, summaryWords),
-      summarise(secondHalf, summaryWords)
-    ]);
-    return summarise(results.join(' '), summaryWords);
+    return await divideAndConquerSummarise(words, summaryWords);
   }
 
   while (true) {
@@ -84,6 +88,16 @@ async function summarise(inputText, summaryWords = 100) {
     
     if (res.error) {
       console.log(res);
+      if (res.error.code === 'context_length_exceeded') {
+        console.log('Context length exceeded, splitting and retrying...');
+        return await divideAndConquerSummarise(words, summaryWords);
+      }
+      if (res.error.message.startsWith('Rate limit reached')) {
+        const wait = 5;
+        console.log(`Rate limit reached, waiting ${wait} seconds...`);
+        await new Promise(resolve => setTimeout(resolve, wait * 1000));
+        continue;
+      }
       console.log('Retrying...');
       continue;
     }
@@ -137,7 +151,6 @@ app.get('*', async (req, res) => {
   } else {
     try {
       inputText = await fetchWebpage(url);
-      return res.send(inputText);
     } catch (e) {
       console.log(e);
       return res.status(400).send('Could not fetch webpage');
